@@ -76,6 +76,8 @@ def handle_clone(args, unknown_args, config, env, verbose):
         cmd = ['git', 'clone', new_url] + unknown_args[1:]
         result = subprocess.run(cmd, env=env, check=False)
         if result.returncode == 0:
+            repo_path = os.path.join(os.getcwd(), repo_name)
+            subprocess.run(['git', '-C', repo_path, 'remote', 'set-url', 'origin', original_url], check=True) # 还原原始 URL
             return
     print(Fore.RED + "❌ 所有镜像源尝试失败" + Style.RESET_ALL)
 
