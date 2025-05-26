@@ -172,3 +172,10 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+
+# compiled files
+fgit.build/
+fgit.dist/
+fgit.onefile-build/
+.exe
+.bak
