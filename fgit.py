@@ -82,7 +82,8 @@ def handle_clone(args, unknown_args, config, env, verbose):
     print(Fore.RED + "❌ 所有镜像源尝试失败" + Style.RESET_ALL)
 
 def handle_other_commands(args, unknown_args, config, env, verbose):
-    result = subprocess.run(['git'] + sys.argv[1:], env=env, check=False)
+    git_args = [args.command] + unknown_args
+    result = subprocess.run(['git'] + git_args, env=env, check=False)
     if result.returncode == 0:
         return
 
@@ -90,11 +91,12 @@ def handle_other_commands(args, unknown_args, config, env, verbose):
     for mirror in mirror_list:
         modify_git_config(mirror)
         try:
-            result = subprocess.run(['git'] + sys.argv[1:], env=env, check=False)
+            result = subprocess.run(['git'] + git_args, env=env, check=False)
             if result.returncode == 0:
                 return
         finally:
             restore_git_config()
+    print(Fore.RED + "❌ 所有镜像源尝试失败" + Style.RESET_ALL)
 
 def get_repo(repo: str, verbose: bool = False) -> bool | None:
     if repo.endswith('.git'):
