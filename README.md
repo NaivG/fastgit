@@ -45,7 +45,7 @@
 
 ### 直接使用
 
-1. 下载编译后的可执行文件：https://github.com/NaivG/fgit/releases
+1. 下载编译后的可执行文件：[releases](https://github.com/NaivG/fgit/releases)
 2. 将可执行文件加入系统路径环境变量，或是移动到PATH目录下，如`C:\Windows\System32`
 3. 打开命令行，输入`fgit`命令，即可使用加速版git命令。
 
@@ -79,19 +79,20 @@ nuitka --standalone --onefile fgit.py
 fgit clone <仓库URL>
 fgit clone <user>/<repo> # fgit的特色方式，会自动转换为https://github.com/<user>/<repo>
 
-# 启用代理
-fgit clone <仓库URL> --use-proxy http://127.0.0.1:7890
-
-# 显示详细输出
-fgit clone <仓库URL> --verbose
-
 # 拉取仓库（在失败时自动选择镜像源）
 fgit pull
+
+# 启用代理
+fgit --use-proxy http://127.0.0.1:7890 clone <仓库URL>
+fgit --use-proxy http://127.0.0.1:7890 push
+
+# 显示详细输出
+fgit --verbose clone <仓库URL>
 
 ...
 ```
 
-**本项目的配置文件默认保存在`C:\Users\USERNAME\.fgit\config.json`或`~/.fgit/config.json`文件中。**
+**本项目的配置文件默认保存在`C:\Users\USERNAME\.fgit.conf`或`~/.fgit.conf`文件中。**
 
 ## bug反馈
 
