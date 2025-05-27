@@ -36,7 +36,12 @@ def main():
     proxy = ProxyHandler(args.use_proxy, config, args.verbose)
     env = proxy.setup_proxy_env()
 
-    print(Fore.CYAN + f"🔧 运行命令: {' '.join(sys.argv)}" + Style.RESET_ALL)
+    if args.verbose:
+        if proxy.proxy_url:
+            print(Fore.CYAN + f"🔧 运行于代理模式" + Style.RESET_ALL)
+        else:
+            print(Fore.CYAN + f"🔧 运行于镜像模式" + Style.RESET_ALL)
+        print(Fore.CYAN + f"命令参数: {' '.join(sys.argv)}" + Style.RESET_ALL)
 
     if args.command not in GIT_COMMANDS_NEED_MIRROR:
         subprocess.run(['git'] + sys.argv[1:], env=env)
@@ -44,13 +49,13 @@ def main():
 
     try:
         if args.command == 'clone':
-            handle_clone(args, unknown_args, config, env, args.verbose)
+            handle_clone(args, unknown_args, config, env, args.verbose, proxy)
         else:
-            handle_other_commands(args, unknown_args, config, env, args.verbose)
+            handle_other_commands(args, unknown_args, config, env, args.verbose, proxy)
     finally:
         proxy.restore_proxy_settings()
 
-def handle_clone(args, unknown_args, config, env, verbose):
+def handle_clone(args, unknown_args, config, env, verbose, proxy):
     original_url = unknown_args[0]
     if '://' not in original_url and '/' in original_url:
         if '@' in original_url:  # SSH格式
@@ -68,7 +73,14 @@ def handle_clone(args, unknown_args, config, env, verbose):
         print(Fore.YELLOW + "🧐 无法获取到仓库信息, 尝试克隆" + Style.RESET_ALL)
     elif repo_status is False and not input_with_timeout(Fore.YELLOW + "🧐 仓库可能不存在，5秒内按任意键忽略..." + Style.RESET_ALL, 5):
         return
-
+    
+    if proxy.proxy_url: # 代理模式
+        cmd = ['git', 'clone', original_url] + unknown_args[1:]
+        result = subprocess.run(cmd, env=env, check=False)
+        if result.returncode == 0:
+            return
+        else:
+            print(Fore.RED + "❌ 在代理模式下克隆失败, 尝试使用镜像模式..." + Style.RESET_ALL)
     mirror_list = select_mirror(config, verbose)
     for mirror in mirror_list:
         new_url = convert_url(original_url, mirror)
@@ -81,12 +93,17 @@ def handle_clone(args, unknown_args, config, env, verbose):
             return
     print(Fore.RED + "❌ 所有镜像源尝试失败" + Style.RESET_ALL)
 
-def handle_other_commands(args, unknown_args, config, env, verbose):
+def handle_other_commands(args, unknown_args, config, env, verbose, proxy):
+    if not os.path.exists(os.path.join(os.getcwd(), '.git')):
+        print(Fore.YELLOW + "❌ 当前目录不是有效的 Git 仓库" + Style.RESET_ALL)
+        return
     git_args = [args.command] + unknown_args
     result = subprocess.run(['git'] + git_args, env=env, check=False)
     if result.returncode == 0:
         return
-
+    elif proxy.proxy_url:
+        print(Fore.RED + "❌ 在代理模式下运行失败, 尝试使用镜像模式..." + Style.RESET_ALL)
+        
     mirror_list = select_mirror(config, verbose)
     for mirror in mirror_list:
         modify_git_config(mirror)
@@ -152,6 +169,7 @@ def input_with_timeout(prompt, timeout):
 
 if __name__ == '__main__':
     try:
+        print(Fore.GREEN + f"fastgit🚀 by NaivG" + Style.RESET_ALL)
         main()
     except KeyboardInterrupt:
         print(Fore.YELLOW + "❗ 操作已取消" + Style.RESET_ALL)
