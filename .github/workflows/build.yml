@@ -36,7 +36,7 @@ jobs:
 
     - name: Setup MinGW (Windows)
       if: matrix.os == 'windows-latest'
-      uses: egor-tensin/setup-mingw@v2  # 配置MinGW环境
+      uses: deevroman/setup-mingw@0.0.2  # 配置MinGW环境
 
     - name: Install system dependencies (macOS)
       if: matrix.os == 'macos-latest'
