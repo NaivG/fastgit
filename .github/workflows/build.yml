@@ -55,21 +55,19 @@ jobs:
     # 编译步骤
     - name: Compile with Nuitka
       run: |
-        python -m nuitka --standalone --onefile --output-dir=dist fgit.py
+        if [ "${{ matrix.os }}" == "windows-latest" ]; then
+          OUTPUT_NAME="fgit_windows.exe"
+        elif [ "${{ matrix.os }}" == "macos-latest" ]; then
+          OUTPUT_NAME="fgit_macos.bin"
+        else
+          OUTPUT_NAME="fgit_linux"
+        fi
+        python -m nuitka --standalone --onefile --output-filename=$OUTPUT_NAME --output-dir=dist fgit.py
 
-    # 上传制品 - 分系统处理
-    - name: Upload Artifact (Windows)
-      if: matrix.os == 'windows-latest'
-      uses: actions/upload-artifact@v4.6.2
-      with:
-        name: my_script-windows
-        path: dist/fgit.exe
-        if-no-files-found: error
-
-    - name: Upload Artifact (Linux/macOS)
-      if: matrix.os != 'windows-latest'
+    # 上传
+    - name: Upload Artifact
       uses: actions/upload-artifact@v4.6.2
       with:
         name: my_script-${{ matrix.os }}
-        path: dist/fgit
+        path: dist/fgit_*
         if-no-files-found: error
