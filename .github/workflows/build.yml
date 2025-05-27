@@ -54,6 +54,7 @@ jobs:
 
     # 编译步骤
     - name: Compile with Nuitka
+      shell: bash
       run: |
         if [ "${{ matrix.os }}" == "windows-latest" ]; then
           OUTPUT_NAME="fgit_windows.exe"
