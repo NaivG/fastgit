@@ -16,10 +16,10 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4.2.2
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v3
       with:
         python-version: ${{ matrix.python-version }}
 
@@ -41,7 +41,7 @@ jobs:
 
     # 缓存Python依赖
     - name: Cache pip dependencies
-      uses: actions/cache@v3
+      uses: actions/cache@v4.2.3
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
@@ -60,7 +60,7 @@ jobs:
     # 上传制品 - 分系统处理
     - name: Upload Artifact (Windows)
       if: matrix.os == 'windows-latest'
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4.6.2
       with:
         name: my_script-windows
         path: dist/fgit.exe
@@ -68,7 +68,7 @@ jobs:
 
     - name: Upload Artifact (Linux/macOS)
       if: matrix.os != 'windows-latest'
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4.6.2
       with:
         name: my_script-${{ matrix.os }}
         path: dist/fgit
