@@ -34,10 +34,6 @@ jobs:
       if: matrix.os == 'windows-latest'
       uses: ilammy/msvc-dev-cmd@v1  # 配置MSVC环境
 
-    - name: Setup MinGW (Windows)
-      if: matrix.os == 'windows-latest'
-      uses: deevroman/setup-mingw@0.0.2  # 配置MinGW环境
-
     - name: Install system dependencies (macOS)
       if: matrix.os == 'macos-latest'
       run: |
@@ -61,7 +57,7 @@ jobs:
       if: matrix.os == 'windows-latest'
       shell: cmd
       run: |
-        python -m nuitka --standalone --onefile --output-filename=fgit_windows.exe --output-dir=dist fgit.py
+        python -m nuitka --standalone --onefile --assume-yes-for-downloads --output-filename=fgit_windows.exe --output-dir=dist fgit.py
 
     - name: Compile with Nuitka (Unix)
       if: matrix.os != 'windows-latest'
