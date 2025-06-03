@@ -74,6 +74,6 @@ jobs:
     - name: Upload Artifact
       uses: actions/upload-artifact@v4.6.2
       with:
-        name: my_script-${{ matrix.os }}
+        name: fgit-${{ matrix.os }}
         path: dist/fgit_*
         if-no-files-found: error

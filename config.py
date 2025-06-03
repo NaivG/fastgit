@@ -37,6 +37,15 @@ class ConfigHandler:
             self.config.set('proxy', k, v)
         self._save()
 
+    def get_downloader_config(self):
+        if self.config.has_section('downloader'):
+            return dict(self.config.items('downloader'))
+        self.config.add_section('downloader')
+        self.config.set('downloader', 'chunk_size', '1024')
+        self.config.set('downloader', 'MIN_FILE_SIZE', '1')
+        self._save()
+        return dict(self.config.items('downloader'))
+
     def _save(self):
         with open(self.config_file, 'w') as f:
             self.config.write(f)

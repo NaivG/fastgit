@@ -29,7 +29,9 @@
 **完全无感化**，和常规的git命令行相同，支持各种命令行参数，也就是说，平时git命令行怎么用，fgit就怎么用，区别只是git换成了fgit。
 
 - **镜像加速**  
-  自动测试多个Git镜像源延迟，选择最快的源进行克隆/拉取（支持`clone`/`pull`/`push`/`fetch`）。
+  自动测试多个Git镜像源延迟，选择最快的源进行克隆/拉取(支持`clone`/`pull`/`push`/`fetch`)。
+- **下载文件**
+  支持直接下载仓库压缩包(TODO: 支持下载release文件)。
 - **代理支持**  
   可通过命令行参数或配置文件设置HTTP/HTTPS代理。
 - **智能缓存**  
@@ -45,7 +47,7 @@
 
 ### 直接使用
 
-1. 下载编译后的可执行文件：[releases](https://github.com/NaivG/fgit/releases)
+1. 下载编译后的可执行文件：[releases](https://github.com/NaivG/fastgit/releases)(稳定版)  / [GitHub Actions](https://github.com/NaivG/fastgit/actions)(最新版)
 2. 将可执行文件加入系统路径环境变量，或是移动到PATH目录下，如`C:\Windows\System32`
 3. 打开命令行，输入`fgit`命令，即可使用加速版git命令。
 
@@ -81,6 +83,10 @@ fgit clone <user>/<repo> # fgit的特色方式，会自动转换为https://githu
 
 # 拉取仓库（在失败时自动选择镜像源）
 fgit pull
+
+# 下载仓库压缩包（自动选择镜像源）
+fgit download-zip <仓库URL>
+fgit download-zip <user>/<repo>
 
 # 启用代理
 fgit --use-proxy http://127.0.0.1:7890 clone <仓库URL>
@@ -118,4 +124,4 @@ fgit --verbose clone <仓库URL>
 
 Star History：
 
-[![Star History Chart](https://api.star-history.com/svg?repos=NaivG/fgit&type=Date)](https://star-history.com/#NaivG/fgit&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=NaivG/fastgit&type=Date)](https://star-history.com/#NaivG/fastgit&Date)

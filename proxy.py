@@ -1,4 +1,5 @@
 import os
+from loguru import logger
 import requests
 
 class ProxyHandler:
@@ -15,17 +16,16 @@ class ProxyHandler:
             try:
                 requests.get(self.proxy_url, timeout=2)
             except Exception as e:
-                print(f'Error connecting to proxy server: {e}')
-                print("无法连接到代理服务器, 代理模式将不可用")
+                logger.exception(f'Error connecting to proxy server: {e}')
+                logger.error("无法连接到代理服务器, 代理模式将不可用")
                 self.proxy_url = None
                 return env
-            if self.verbose:
-                print(f"🌐 设置代理: {self.proxy_url}")
+            logger.debug(f"🌐 设置代理: {self.proxy_url}")
             env['HTTP_PROXY'] = self.proxy_url
             env['HTTPS_PROXY'] = self.proxy_url
         return env
 
     def restore_proxy_settings(self):
         if self.proxy_url and self.verbose:
-            print("恢复原始代理设置")
+            logger.info("恢复原始代理设置")
         
