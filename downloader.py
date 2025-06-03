@@ -6,17 +6,17 @@ def download_file(url: str, file_path: str, chunk_size: int = 1024, MIN_FILE_SIZ
     try:
         response = requests.get(url, stream=True)
         total_size = int(response.headers.get('content-length', 0))
-        logger.info(f"下载文件: {file_path} ({total_size/1024:.1f}KB)")
-        if total_size < MIN_FILE_SIZE:
+        if int(MIN_FILE_SIZE) > total_size:
             logger.debug(f"镜像源错误: 文件大小小于{MIN_FILE_SIZE}字节")
             return False
+        logger.info(f"下载文件: {file_path} ({total_size/1024:.1f}KB)")
 
         with open(file_path, 'wb') as f:
             with tqdm(total=total_size, unit='B', unit_scale=True, desc="下载文件") as pbar:
-                for data in response.iter_content(chunk_size=chunk_size):
+                for data in response.iter_content(chunk_size=int(chunk_size)):
                     f.write(data)
                     pbar.update(len(data))
         return True
     except Exception as e:
-        logger.debug(f"下载失败: {str(e)}")
+        logger.error(f"下载失败: {str(e)}")
         return False
