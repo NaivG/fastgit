@@ -19,6 +19,8 @@ init(autoreset=True)
 parser = argparse.ArgumentParser(description='Git加速工具，支持镜像源和代理')
 parser.add_argument('command', type=str, help='git命令, 或是fgit命令')
 parser.add_argument('--use-proxy', type=str, help='设置HTTP代理（格式: http://[user:pass@]host:port）')
+parser.add_argument('--branch', type=str, help='分支名(仅在download命令时有效)', default='main')
+
 parser.add_argument('--verbose', action='store_true', help='显示详细输出')
 args, unknown_args = parser.parse_known_args()
 
@@ -45,7 +47,7 @@ def main():
     logger.debug(Fore.CYAN + f"命令参数: {' '.join(sys.argv)}" + Style.RESET_ALL)
 
 
-    if args.command == 'download-zip':
+    if args.command == 'download':
         handle_download_zip(args, unknown_args, config, env, args.verbose)
         return
     
@@ -66,7 +68,7 @@ def handle_download_zip(args, unknown_args, config, env, verbose):
     if not downloader_config:
         logger.warning(Fore.YELLOW + "🧐 下载配置不存在, 使用默认配置" + Style.RESET_ALL)
     chunk_size = downloader_config.get('chunk_size', 1024)
-    MIN_FILE_SIZE = downloader_config.get('min_file_size', 1)
+    MIN_FILE_SIZE = downloader_config.get('min_file_size', 100)
     
     original_url = unknown_args[0]
     if '://' not in original_url and '/' in original_url:
@@ -89,9 +91,9 @@ def handle_download_zip(args, unknown_args, config, env, verbose):
         
     mirror_list = select_mirror(config, args.verbose)
     for mirror in mirror_list:
-        new_url = convert_url(original_url, mirror) + '/archive/refs/heads/main.zip'
+        new_url = convert_url(original_url, mirror) + f'/archive/refs/heads/{args.branch}.zip'
         logger.info(Fore.GREEN + f"🔄 尝试镜像源 {mirror} [{mirror_list.index(mirror) + 1}/{len(mirror_list)}]: {new_url}" + Style.RESET_ALL)
-        if download_file(new_url, os.path.join(os.getcwd(), repo_name + '.zip'), chunk_size=chunk_size, MIN_FILE_SIZE=MIN_FILE_SIZE):
+        if download_file(new_url, os.path.join(os.getcwd(), f'{repo_name}-{args.branch}.zip'), chunk_size=chunk_size, MIN_FILE_SIZE=MIN_FILE_SIZE):
             return
     logger.error(Fore.RED + "❌ 所有镜像源尝试失败" + Style.RESET_ALL)
     return

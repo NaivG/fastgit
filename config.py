@@ -42,7 +42,7 @@ class ConfigHandler:
             return dict(self.config.items('downloader'))
         self.config.add_section('downloader')
         self.config.set('downloader', 'chunk_size', '1024')
-        self.config.set('downloader', 'MIN_FILE_SIZE', '1')
+        self.config.set('downloader', 'MIN_FILE_SIZE', '100')
         self._save()
         return dict(self.config.items('downloader'))
 

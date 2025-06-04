@@ -30,7 +30,7 @@
 
 - **镜像加速**  
   自动测试多个Git镜像源延迟，选择最快的源进行克隆/拉取(支持`clone`/`pull`/`push`/`fetch`)。
-- **下载文件**
+- **下载文件**  
   支持直接下载仓库压缩包(TODO: 支持下载release文件)。
 - **代理支持**  
   可通过命令行参数或配置文件设置HTTP/HTTPS代理。
@@ -85,8 +85,8 @@ fgit clone <user>/<repo> # fgit的特色方式，会自动转换为https://githu
 fgit pull
 
 # 下载仓库压缩包（自动选择镜像源）
-fgit download-zip <仓库URL>
-fgit download-zip <user>/<repo>
+fgit download <仓库URL>
+fgit --branch <分支名> download <user>/<repo>
 
 # 启用代理
 fgit --use-proxy http://127.0.0.1:7890 clone <仓库URL>

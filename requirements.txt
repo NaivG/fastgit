@@ -2,4 +2,5 @@ ping3
 colorama
 prettytable
 loguru
+requests
 tqdm
