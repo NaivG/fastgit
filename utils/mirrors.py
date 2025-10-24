@@ -5,6 +5,7 @@ from prettytable import PrettyTable
 from colorama import Fore, Style
 from urllib.parse import urlparse
 
+# 定义可用的镜像源
 MIRRORS = {
     'github': 'https://github.com',
     'bgithub': 'https://bgithub.xyz',
@@ -25,8 +26,18 @@ RAWCONTENT_MIRRORS = {
     'ghproxy.net': 'https://ghproxy.net/https://raw.githubusercontent.com',
 }
 
+
 def test_latency(verbose=False):
-    logger.debug(Fore.CYAN + "🔎 测试镜像源延迟..." + Style.RESET_ALL)
+    """
+    测试所有镜像源的延迟
+    
+    Args:
+        verbose (bool): 是否显示详细信息
+        
+    Returns:
+        list: 按延迟排序的镜像源名称列表
+    """
+    logger.info(Fore.CYAN + "🔎 测试镜像源延迟..." + Style.RESET_ALL)
     table = PrettyTable()
     table.field_names = ['Git 镜像源', 'Latency 延迟']
     
@@ -45,26 +56,64 @@ def test_latency(verbose=False):
     if verbose:
         print(table)
     
+    # 按延迟排序，None值排在最后
     sorted_mirrors = sorted(results.items(), key=lambda x: x[1] or float('inf'))
-    return [k for k, v in sorted_mirrors if v]
+    return [k for k, v in sorted_mirrors if v is not None]
+
 
 def test_single(name, url):
+    """
+    测试单个镜像源的延迟
+    
+    Args:
+        name (str): 镜像源名称
+        url (str): 镜像源URL
+        
+    Returns:
+        tuple: (镜像源名称, 延迟时间)
+    """
     host = urlparse(url).netloc
     try:
-        return (name, ping(host, unit='ms', timeout=2))
+        latency = ping(host, unit='ms', timeout=2)
+        return (name, latency)
     except:
         return (name, None)
 
+
 def select_mirror(config, verbose=False):
+    """
+    选择最佳镜像源
+    
+    Args:
+        config (ConfigHandler): 配置处理器实例
+        verbose (bool): 是否显示详细信息
+        
+    Returns:
+        list: 镜像源列表
+    """
+    # 检查是否有缓存的镜像源列表
     if cached := config.get_mirrors():
         logger.debug(Fore.CYAN + f"✔️ 已选择 {cached}(缓存) 作为 Git 镜像源" + Style.RESET_ALL)
         return cached
+        
+    # 测试所有镜像源并保存结果
     mirrors = test_latency(verbose)
     config.save_mirrors(mirrors)
     logger.debug(Fore.CYAN + f"✔️ 已选择 {mirrors} 作为 Git 镜像源" + Style.RESET_ALL)
     return mirrors
 
+
 def convert_url(url, mirror):
+    """
+    将URL转换为使用指定镜像源的URL
+    
+    Args:
+        url (str): 原始URL
+        mirror (str): 镜像源名称
+        
+    Returns:
+        str: 转换后的URL
+    """
     if mirror == 'github':
         return url
     base = MIRRORS[mirror]

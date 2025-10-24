@@ -179,3 +179,12 @@ fgit.dist/
 fgit.onefile-build/
 .exe
 .bak
+
+# IDE
+.project/
+.classpath/
+.settings/
+.factorypath/
+.vscode/
+.idea/
+.gradle/

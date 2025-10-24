@@ -59,13 +59,13 @@
 pip install -r requirements.txt
 ```
 
-1. 克隆项目
+2. 克隆项目
    
 ```bash
 git clone https://github.com/NaivG/fgit.git
 ```
 
-1. 进入项目目录，使用python库编译可执行文件
+3. 进入项目目录，使用python库编译可执行文件
    
 **本项目选择nuitka编译，若需复现则编译前请先安装Visual C++ Build Tools**
 
