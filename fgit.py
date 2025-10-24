@@ -4,7 +4,7 @@ import subprocess
 import argparse
 import os
 import json
-import threading
+from threading import Thread
 from loguru import logger
 from urllib.request import urlopen, Request
 from urllib.error import HTTPError
@@ -39,6 +39,12 @@ if args.verbose:
 else:
     logger.add(sys.stderr, level='INFO', colorize=True, format='{time:HH:mm:ss} | {level} | {message}')
 
+def print_missing_arg():
+    """打印缺少参数的提示"""
+    logger.error(Fore.RED + "❌ 缺少必要参数" + Style.RESET_ALL)
+    logger.error(' '.join(sys.argv))
+    logger.error(len(sys.argv) * " " + "        ^^")
+    logger.info(Fore.CYAN + "📖 使用帮助: fgit -h" + Style.RESET_ALL)
 
 def main():
     """主函数"""
@@ -54,11 +60,8 @@ def main():
     
     logger.debug(Fore.CYAN + f"命令参数: {' '.join(sys.argv)}" + Style.RESET_ALL)
 
-    if not args.command or len(sys.argv) <= 2:
-        logger.error(Fore.RED + "❌ 缺少必要参数" + Style.RESET_ALL)
-        logger.error(' '.join(sys.argv))
-        logger.error("        ^^")
-        logger.info(Fore.CYAN + "📖 使用帮助: fgit -h" + Style.RESET_ALL)
+    if not args.command or len(sys.argv) < 2:
+        print_missing_arg()
         return
 
     # 处理 download 命令
@@ -83,6 +86,10 @@ def main():
 
 def handle_download_zip(args, unknown_args, config, env, verbose):
     """处理下载zip文件命令"""
+    if unknown_args is None or len(unknown_args) < 1:
+        print_missing_arg()
+        return
+    
     downloader_config = config.get_downloader_config()
     if not downloader_config:
         logger.warning(Fore.YELLOW + "🧐 下载配置不存在, 使用默认配置" + Style.RESET_ALL)
@@ -119,6 +126,10 @@ def handle_download_zip(args, unknown_args, config, env, verbose):
 
 def handle_clone(args, unknown_args, config, env, verbose, proxy):
     """处理克隆命令"""
+    if unknown_args is None or len(unknown_args) < 1:
+        print_missing_arg()
+        return
+
     original_url = unknown_args[0]
     original_url = normalize_repo_url(original_url)
 
@@ -284,7 +295,7 @@ def input_with_timeout(prompt, timeout):
     """
     logger.info(prompt)
     result = []
-    thread = threading.Thread(target=lambda: result.append(sys.stdin.read(1)))
+    thread = Thread(target=lambda: result.append(sys.stdin.read(1)))
     thread.daemon = True
     thread.start()
     thread.join(timeout)

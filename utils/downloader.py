@@ -23,7 +23,7 @@ def download_file(url: str, file_path: str, chunk_size: int = 1024, MIN_FILE_SIZ
         total_size = int(response.headers.get('content-length', 0))
         
         # 检查文件大小
-        if MIN_FILE_SIZE > total_size:
+        if int(MIN_FILE_SIZE) > total_size:
             logger.debug(f"镜像源错误: 文件大小小于{MIN_FILE_SIZE}字节")
             return False
             
@@ -32,7 +32,7 @@ def download_file(url: str, file_path: str, chunk_size: int = 1024, MIN_FILE_SIZ
         # 下载文件
         with open(file_path, 'wb') as f:
             with tqdm(total=total_size, unit='B', unit_scale=True, desc="下载文件") as pbar:
-                for data in response.iter_content(chunk_size=chunk_size):
+                for data in response.iter_content(chunk_size=int(chunk_size)):
                     f.write(data)
                     pbar.update(len(data))
         
